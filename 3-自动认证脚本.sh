@@ -1,9 +1,9 @@
 #!/bin/bash
 # AWS凭证自动获取脚本
 
-# 自动配置Builder-MCP符号链接
+# 自动配置Builder-MCP认证
 setup_builder_mcp() {
-    # 改进的用户检测逻辑
+    # 智能用户检测逻辑
     local wsl_user=$(whoami)
     local windows_user=""
     
@@ -13,11 +13,12 @@ setup_builder_mcp() {
         windows_user=$(ls /mnt/c/Users/ | grep -v "^Public$\|^Default\|^All Users$\|^Administrator$\|^Guest$" | head -1)
     fi
     
-    # 创建符号链接
     mkdir -p ~/.midway
-    if [[ ! -L ~/.midway/cookie ]] || [[ ! -e ~/.midway/cookie ]]; then
-        rm -f ~/.midway/cookie
-        ln -sf "/mnt/c/Users/$windows_user/.midway/cookie" ~/.midway/cookie
+    
+    # 复制Windows cookie到WSL，而不是符号链接
+    local windows_cookie="/mnt/c/Users/$windows_user/.midway/cookie"
+    if [[ -f "$windows_cookie" ]]; then
+        cp "$windows_cookie" ~/.midway/cookie
     fi
 }
 

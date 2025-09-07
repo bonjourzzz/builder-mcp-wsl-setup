@@ -1,4 +1,4 @@
-# Builder-MCP WSL自动配置方案 Amazon-ESM-NRHZ-Alan
+# Builder-MCP WSL自动配置方案
 
 🚀 **一键配置Amazon Builder-MCP在WSL环境中的自动认证**
 
@@ -12,35 +12,16 @@
 
 - WSL无法直接运行Windows的`mwinit`认证命令
 - WSL环境下SSL证书验证失败
-- 需要共享Windows认证cookie到WSL
-
-## ⚡ 快速开始
-
-### 用户操作（超简单）
-
-1. **下载所有文件到本地**
-2. **对AI说**：
-   ```
-   请阅读 "2-技术文档-给AI参考.md" 文件，并按照其中的安装步骤自动执行所有配置操作
-   ```
-3. **在Windows PowerShell运行**：
-   ```powershell
-   mwinit
-   ```
-4. **重新打开WSL终端，运行**：
-   ```bash
-   q
-   ```
-
-### 成功标志
-- WSL启动时显示：`✓ AWS验证成功`
-- 运行`q`命令能正常启动Builder-MCP
+- 多终端认证进程冲突问题
+- Windows认证被WSL覆盖的问题
 
 ## 🔧 技术原理
 
-- **自动符号链接**：智能检测Windows用户，创建认证cookie共享
+- **Cookie复制机制**：每次WSL启动时复制Windows认证到WSL
+- **进程隔离**：每个WSL终端的curl进程独立工作，共享同一cookie文件
+- **Windows保护**：原始Windows认证永远不被修改
 - **SSL验证跳过**：绕过WSL环境SSL证书问题
-- **开机自启**：每次WSL启动自动配置和验证
+- **多终端支持**：可同时打开任意数量WSL终端
 
 ## 🎯 适用对象
 
@@ -48,14 +29,6 @@
 - 希望自动化认证配置的开发者
 - 需要AI辅助配置的用户
 
-## 📝 贡献
-
-欢迎提交Issue和Pull Request改进这个配置方案。
-
-## 📄 许可证
-
-MIT License
-
 ---
 
-**让AI帮你3步完成Builder-MCP WSL配置！**
+**详细使用方法请查看"1-用户操作指南-先看这个.md"**

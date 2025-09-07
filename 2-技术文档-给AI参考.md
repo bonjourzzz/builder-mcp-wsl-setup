@@ -6,13 +6,14 @@ Builder-MCP是Amazon内部工具，需要在WSL环境中配置认证才能使用
 2. WSL环境下SSL证书验证会失败
 3. 需要共享Windows的认证cookie到WSL
 
-## 🚀 一键自动化解决方案
+## 🚀 一键自动化解决方案（最新版）
 
 ### 核心思路
 通过一个自动执行脚本，在每次WSL启动时自动完成所有配置，包括：
 - 智能检测正确的Windows用户
-- 自动创建和修复符号链接
+- **复制Windows认证cookie到WSL**（而非符号链接）
 - 跳过SSL验证获取AWS凭证
+- **多终端进程隔离**
 
 ### AI执行步骤
 
@@ -53,8 +54,9 @@ ls -la /etc/profile.d/aws-credentials.sh
 ### 自动化程度高
 - ✅ 每次WSL启动自动配置
 - ✅ 自动检测正确的Windows用户
-- ✅ 自动修复符号链接异常
+- ✅ **自动复制Windows认证cookie**
 - ✅ 自动跳过SSL验证
+- ✅ **多终端进程隔离** - 每个WSL终端的curl进程独立工作
 
 ### 智能用户检测
 - ✅ 优先使用WSL用户名匹配Windows用户
@@ -63,8 +65,10 @@ ls -la /etc/profile.d/aws-credentials.sh
 
 ### 维护成本低
 - ✅ 无需手动维护配置
-- ✅ 无需担心符号链接异常
+- ✅ 无需担心认证冲突
 - ✅ 认证过期时只需重新运行`mwinit`
+- ✅ **无限制多终端使用** - 可同时打开任意数量WSL终端
+- ✅ **进程级隔离** - 各终端curl进程互不影响
 
 ## 🚨 故障排除
 
@@ -92,13 +96,20 @@ sudo usermod -aG sudo $USER
 
 ## 🎯 技术原理
 
-### 符号链接共享
-- WSL通过符号链接访问Windows的认证cookie
-- 路径：`~/.midway/cookie` → `/mnt/c/Users/用户名/.midway/cookie`
+### Cookie复制机制（最新改进）
+- **每次WSL启动时复制Windows cookie到WSL**
+- **进程隔离**：每个WSL终端的curl进程独立工作，共享同一cookie文件
+- **Windows保护**：原始Windows认证永远不被修改
+- **多终端支持**：无限制同时使用多个WSL终端
 
 ### SSL验证跳过
 - 使用`curl -k`参数跳过SSL证书验证
 - 直接从Midway服务获取临时AWS凭证
+
+### Cookie处理机制
+- **复制策略**：`cp` Windows cookie到WSL，而非符号链接
+- **完整读写**：保持`-c`和`-b`参数，确保builder-mcp正常工作
+- **隔离保护**：WSL中的cookie操作不影响Windows原始认证
 
 ### 自动执行机制
 - 脚本放在`/etc/profile.d/`目录
