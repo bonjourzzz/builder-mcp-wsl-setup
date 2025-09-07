@@ -1,4 +1,4 @@
-# Builder-MCP WSL自动配置方案
+# Builder-MCP WSL自动配置方案 ESM-NRHZ-Alan
 
 🚀 **一键配置Amazon Builder-MCP在WSL环境中的自动认证**
 
